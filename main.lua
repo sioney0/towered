@@ -13,6 +13,10 @@ function love.load()
     player_one = Player:new(world, 100, 100, 100, 1)
     player_two = Player:new(world, 200, 200, 100, 2)
     love.graphics.setBackgroundColor(0, 1, 0)
+
+    platform1 = love.graphics.newImage('/sprites/Platform1.png')
+
+
 end
 
 function love.update(dt)
@@ -24,10 +28,12 @@ function love.update(dt)
 end
 
 function love.draw()
-    world:draw()
+    
 
     player_one:draw()
     player_two:draw()
+
+    love.graphics.draw(platform1, 100, 400, 0, 12, 6)
 end
 
 

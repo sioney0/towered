@@ -26,37 +26,16 @@ function Player:new(world, x_pos, y_pos, health, type)
    
     entity.collider = world:newRectangleCollider(x_pos, y_pos, 50, 80)
     entity.collider:setFixedRotation(true)
+    
    
-
     setmetatable(entity, Player)
 
     return entity
 end
 
 function Player:punch(world)
-    if self.punchCooldown > 0 then
-        return
-    end
 
-    self.isPunching = true
-    self.punchTimer = self.punchDuration
-    self.punchCooldown = self.punchCooldownTime
-
-    local hitboxWidth = 40
-    local hitboxHeight = 30
-
-    local hitboxX = self.x + self.direction * 40
-    local hitboxY = self.y
-
-    self.punchHitbox = world:newRectangleCollider(
-        hitboxX - hitboxWidth / 2,
-        hitboxY - hitboxHeight / 2,
-        hitboxWidth,
-        hitboxHeight
-    )
-
-    self.punchHitbox:setType("static")
-    self.punchHitbox:setCollisionClass("Punch")
+    
 end
 
 
@@ -66,9 +45,8 @@ function movePlayer(p, leftKey, rightKey, upKey, downKey)
     if love.keyboard.isDown(leftKey) and px > -200 then
         p.collider:applyForce(-5000, 0)
         p.direction = -1
-    end
 
-    if love.keyboard.isDown(rightKey) and px < 200 then
+    elseif love.keyboard.isDown(rightKey) and px < 200 then
         p.collider:applyForce(5000, 0)
         p.direction = 1
     else 
@@ -92,7 +70,6 @@ function Player:update(dt)
     if self.collider:enter("Ground") then
         self.canJump = true
     end
-
 
     self.x = self.collider:getX()
     self.y = self.collider:getY()
