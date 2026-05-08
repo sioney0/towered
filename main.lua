@@ -2,7 +2,7 @@ local Player = require('player')
 
 function love.load()
     wf = require "libraries/windfield" 
-    love.window.setMode(1920, 1080)
+
 
     world = wf.newWorld(0, 500)
     world:addCollisionClass("Ground")
@@ -10,7 +10,8 @@ function love.load()
     ground:setType('static')
     ground:setCollisionClass("Ground")
 
-    player_one = Player:new(world, 100, 100, 100)
+    player_one = Player:new(world, 100, 100, 100, 1)
+    player_two = Player:new(world, 200, 200, 100, 2)
     love.graphics.setBackgroundColor(0, 1, 0)
 end
 
@@ -19,13 +20,14 @@ function love.update(dt)
     world:update(dt)
 
     player_one:update(dt)
+    player_two:update(dt)
 end
 
 function love.draw()
     world:draw()
 
     player_one:draw()
-
+    player_two:draw()
 end
 
 

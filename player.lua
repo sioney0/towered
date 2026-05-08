@@ -4,7 +4,7 @@ Player.__index = Player
 local wf = require "libraries/windfield"
 
 
-function Player:new(world, x_pos, y_pos, health)
+function Player:new(world, x_pos, y_pos, health, type)
 
     local entity = {
         x = x_pos,
@@ -13,6 +13,7 @@ function Player:new(world, x_pos, y_pos, health)
         image = love.graphics.newImage('/sprites/Placeholder_Human.png'),
         direction = 1,
         canJump = true,
+        player_number = type,
         
 
         isPunching = false,
@@ -23,7 +24,7 @@ function Player:new(world, x_pos, y_pos, health)
         punchHitbox = nil
     }
    
-    entity.collider = world:newRectangleCollider(x_pos, y_pos, 32, 48)
+    entity.collider = world:newRectangleCollider(x_pos, y_pos, 50, 80)
     entity.collider:setFixedRotation(true)
    
 
@@ -62,30 +63,34 @@ end
 function movePlayer(p, leftKey, rightKey, upKey, downKey) 
     local px, py = p.collider:getLinearVelocity()
     
-    if love.keyboard.isDown('left') and px > -200 then
+    if love.keyboard.isDown(leftKey) and px > -200 then
         p.collider:applyForce(-5000, 0)
         p.direction = -1
-    elseif love.keyboard.isDown('right') and px < 200 then
+    end
+
+    if love.keyboard.isDown(rightKey) and px < 200 then
         p.collider:applyForce(5000, 0)
         p.direction = 1
     else 
          p.collider:setLinearVelocity(px * 0.8, py)
     end
 
-    if love.keyboard.isDown("up") and py > -200 and p.canJump then
+    if love.keyboard.isDown(upKey) and py > -200 and p.canJump then
         p.collider:applyLinearImpulse(0, -1000)
         p.canJump = false
     end
 end
 
-function Player:update(dt, world)
-    movePlayer(self, "left", "right", "up", "down")
-    if self.collider:enter("Ground") then
-        self.canJump = true
+function Player:update(dt)
+    if self.player_number == 1 then
+        movePlayer(self, "left", "right", "up", "down")
+    elseif self.player_number == 2 then
+        movePlayer(self, "a", "d", "w", "s")
     end
 
-    if self.punchCooldown > 0 then
-        self.punchCooldown = self.punchCooldown - dt
+
+    if self.collider:enter("Ground") then
+        self.canJump = true
     end
 
 
