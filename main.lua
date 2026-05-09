@@ -73,8 +73,8 @@ function love.update(dt)
 
     if gameState == "fighting" then 
     
-        cam:move(0, -10 * dt)
-        
+    cam:move(0, -5 * dt)
+    
 
     player_one:update(dt, world, player_two, cam)
     player_two:update(dt, world, player_one, cam)
@@ -114,7 +114,6 @@ function love.draw()
    
 
     fog.animation.move:draw(fog.spriteSheet, fog.x, fog.y, 0, 4, 4)
-        
         
 end
 
