@@ -84,9 +84,9 @@ function movePlayer(p, leftKey, rightKey, upKey, downKey)
     end
 end
 
-function Player:update(dt, world, opponent, cam, gameState)
+function Player:update(dt, world, opponent, cam)
 
-    self:checkDeath(cam, gameState)
+    self:checkDeath(cam)
     
     if self.jumpcooldown > 0 then
         self.jumpcooldown = self.jumpcooldown - dt
@@ -99,6 +99,16 @@ function Player:update(dt, world, opponent, cam, gameState)
         self.y = self.collider:getY()
 
         return
+    end
+
+    if self.player_number == 1 then
+        if love.keyboard.isDown("p") then
+            self:punch(world)
+        end
+    elseif self.player_number == 2 then
+        if love.keyboard.isDown("f") then
+            self:punch(world)
+        end
     end
 
     -- For moving
@@ -134,6 +144,10 @@ function Player:updatePunch(dt, world, opponent)
         local hitboxX = self.punchHitbox:getX()
         local hitboxY = self.punchHitbox:getY()
 
+
+
+
+
         local colliders = world:queryRectangleArea( -- find any colliders of class "Player" in this rectangle hitbox.
             hitboxX - 35 / 2,
             hitboxY - self.height / 2,
@@ -167,6 +181,8 @@ function Player:checkDeath(cam, gameState)
             self.collider:setLinearVelocity(0, 0)
         end
     end
+
+  
 
 end
 

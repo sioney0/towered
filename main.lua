@@ -65,13 +65,15 @@ function love.load()
 
 end
 
-function love.update(dt)
-        
-    function love.keypressed(key)
-        if gameState == "menu" then
-            gameState = "fighting"
-        end
+      
+function love.keypressed(key)
+    if gameState == "menu" then
+        gameState = "fighting"
     end
+end
+
+function love.update(dt)
+  
 
     if gameState == "fighting" then 
     
