@@ -42,6 +42,12 @@ function Player:new(world, x_pos, y_pos, health, type)
         entity.spriteSheet:getWidth(),
         entity.spriteSheet:getHeight()
     )
+
+    entity.runGrid = anim8.newGrid(
+        60, 48,
+        entity.runSheet:getWidth(),
+        entity.runSheet:getHeight()
+    )
     
     if entity.player_number == 1 then
 
@@ -49,8 +55,8 @@ function Player:new(world, x_pos, y_pos, health, type)
         entity.RightIdleAnimation = anim8.newAnimation(entity.grid(1, 2), 0.2)
         entity.LeftpunchAnimation = anim8.newAnimation(entity.grid('2-3', 1), 0.1)
         entity.RightPunchAnimation = anim8.newAnimation(entity.grid('2-3', 2), 0.1)
-        entity.RunLeftAnimation = anim8.newAnimation(entity.grid('2-3', 2), 0.05)
-        entity.RunLeftAnimation = anim8.newAnimation(entity.grid('2-3', 1), 0.05)
+        entity.RunLeftAnimation = anim8.newAnimation(entity.runGrid('2-3', 2), 0.5)
+        entity.RunRightAnimation = anim8.newAnimation(entity.runGrid('2-3', 1), 0.5)
         entity.currentAnimation = entity.RightIdleAnimation
 
     elseif entity.player_number == 2 then
@@ -59,11 +65,13 @@ function Player:new(world, x_pos, y_pos, health, type)
         entity.RightIdleAnimation = anim8.newAnimation(entity.grid(1, 4), 0.2)
         entity.LeftpunchAnimation = anim8.newAnimation(entity.grid('2-3', 3), 0.1)
         entity.RightPunchAnimation = anim8.newAnimation(entity.grid('2-3', 4), 0.1)
-        entity.RunLeftAnimation = anim8.newAnimation(entity.grid('2-3', 3), 0.05)
-        entity.RunLeftAnimation = anim8.newAnimation(entity.grid('2-3', 4), 0.05)
+        entity.RunLeftAnimation = anim8.newAnimation(entity.runGrid('2-3', 4), 0.5)
+        entity.RunRightAnimation = anim8.newAnimation(entity.runGrid('2-3', 3), 0.5)
         entity.direction = -1
         entity.currentAnimation = entity.LeftIdleAnimation
     end
+
+    entity.currentSheet = entity.spriteSheet
 
     return entity
 end
@@ -80,9 +88,11 @@ function Player:punch(world)
     if self.direction == -1 then
         self.currentAnimation = self.LeftpunchAnimation
         self.LeftpunchAnimation:gotoFrame(1)
+        self.currentSheet = self.spriteSheet
     elseif self.direction == 1 then
         self.currentAnimation = self.RightPunchAnimation
         self.RightPunchAnimation:gotoFrame(1)
+        self.currentSheet = self.spriteSheet
     end
     
     self.punchStartup = 0.08
@@ -96,9 +106,19 @@ function movePlayer(p, leftKey, rightKey, upKey, downKey)
         p.collider:applyForce(-5000, 0)
         p.direction = -1
 
+        if not p.punchHitbox and p.punchStartup <= 0 then
+            p.currentAnimation = p.RunLeftAnimation
+            p.currentSheet = p.runSheet
+        end
+
     elseif love.keyboard.isDown(rightKey) and px < 200 and not love.keyboard.isDown(leftKey) then
         p.collider:applyForce(5000, 0)
         p.direction = 1
+
+        if not p.punchHitbox and p.punchStartup <= 0 then
+            p.currentAnimation = p.RunRightAnimation
+            p.currentSheet = p.runSheet
+        end
     else 
          p.collider:setLinearVelocity(px * 0.8, py)
     end
@@ -147,11 +167,30 @@ function Player:update(dt, world, opponent, cam)
         movePlayer(self, "a", "d", "w", "s")
     end
 
+    local px = self.collider:getLinearVelocity()
+
     if not self.punchHitbox and self.punchStartup <= 0 then
-        if self.direction == -1 then
-            self.currentAnimation = self.LeftIdleAnimation
+
+        if math.abs(px) > 20 then
+
+            if self.direction == -1 then
+                self.currentAnimation = self.RunLeftAnimation
+                self.currentSheet = self.runSheet
+            else
+                self.currentAnimation = self.RunRightAnimation
+                self.currentSheet = self.runSheet
+            end
+
         else
-            self.currentAnimation = self.RightIdleAnimation
+
+            if self.direction == -1 then
+                self.currentAnimation = self.LeftIdleAnimation
+                self.currentSheet = self.spriteSheet
+            else
+                self.currentAnimation = self.RightIdleAnimation
+                self.currentSheet = self.spriteSheet
+            end
+
         end
     end
 
@@ -175,7 +214,7 @@ end
 
 function Player:updatePunch(dt, world, opponent)
 
-    --checks if punchstartup is greater than 0, if it is, creates a punch hitbox
+    --checks if punchStartup is greater than 0, if it is, creates a punch hitbox
     if self.punchStartup > 0 then
         self.punchStartup = self.punchStartup - dt
 
@@ -203,7 +242,7 @@ function Player:updatePunch(dt, world, opponent)
         end
     end
 
-    --only runs if there is punchhitbox, which is only when punchStartup was > 1
+    --only runs if there is punchHitbox, which is only when punchStartup was > 1
     if self.punchHitbox then
         self.punchDuration = self.punchDuration - dt
 
@@ -238,8 +277,10 @@ function Player:updatePunch(dt, world, opponent)
                 self.RightPunchAnimation:gotoFrame(1)
             if self.direction == -1 then
                 self.currentAnimation = self.LeftIdleAnimation
+                self.currentSheet = self.spriteSheet
             elseif self.direction == 1 then
                 self.currentAnimation = self.RightIdleAnimation
+                self.currentSheet = self.spriteSheet
             
             end
         end
@@ -265,14 +306,15 @@ function Player:draw()
     -- local imgW = self.image:getWidth() local imgH = self.image:getHeight()
 
     local offsetX
-    if self.direction == -1 then
+    if self.direction == -1 and self.currentSheet == self.spriteSheet then
         offsetX = 25
+    elseif self.direction == 1 and self.currentSheet == self.runSheet then
+        offsetX = 50
     else 
         offsetX = 25
     end
 
-    self.currentAnimation:draw(
-        self.spriteSheet,
+    self.currentAnimation:draw(self.currentSheet,
         self.x + offsetX,
         self.y,
         0,
