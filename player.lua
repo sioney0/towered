@@ -40,7 +40,7 @@ function Player:punch(world)
     end
   
     local hitboxX
-   
+    local punchWidth = 35
 
     if self.direction == 1 then
         -- facing right start at right edge of player
@@ -50,7 +50,7 @@ function Player:punch(world)
         hitboxX = self.x - self.width / 2 - punchWidth
     end
 
-    self.punchHitbox = world:newRectangleCollider(hitboxX, self.y - 40, 35, self.height) 
+    self.punchHitbox = world:newRectangleCollider(hitboxX, self.y - 40, punchWidth, self.height) 
     self.punchHitbox:setType("static")
     self.punchHitbox:setSensor(true)
     self.alreadyHit = false
