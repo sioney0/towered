@@ -21,7 +21,6 @@ function Player:new(world, x_pos, y_pos, health, type)
         isPunching = false,
         punchDuration = 0.4,
         punchCooldown = 0,
-        punchCooldownTime = 0.4,
         punchHitbox = nil,
         alreadyHit = false
     }
@@ -54,6 +53,8 @@ function Player:punch(world)
     self.punchHitbox:setType("static")
     self.punchHitbox:setSensor(true)
     self.alreadyHit = false
+
+    self.punchCooldown = 2
     
 end
 
@@ -94,6 +95,10 @@ function Player:update(dt, world, opponent)
     self.y = self.collider:getY()
 
     -- For Punching
+    if self.punchCooldown > 0 then
+        self.punchCooldown = self.punchCooldown - dt
+    end
+
     if self.player_number == 1 then
         if love.keyboard.isDown('p') then
             self:punch(world)

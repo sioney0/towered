@@ -4,7 +4,7 @@ function love.load()
     wf = require "libraries/windfield" 
 
 
-    world = wf.newWorld(0, 1000)
+    world = wf.newWorld(0, 600)
     world:addCollisionClass("Ground")
     ground = world:newRectangleCollider(100, 400, 600, 100)
     ground:setType('static')
