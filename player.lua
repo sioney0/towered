@@ -22,12 +22,13 @@ function Player:new(world, x_pos, y_pos, health, type)
         punchDuration = 0.4,
         punchCooldown = 0,
         punchCooldownTime = 0.4,
-        punchHitbox = nil
+        punchHitbox = nil,
+        alreadyHit = false
     }
    
     entity.collider = world:newRectangleCollider(x_pos, y_pos, 50, 80)
     entity.collider:setFixedRotation(true)
-    
+    entity.collider:setCollisionClass("Player")
     setmetatable(entity, Player)
 
     return entity
@@ -37,10 +38,22 @@ function Player:punch(world)
     if self.punchCooldown > 0 or self.punchHitbox then
         return
     end
+  
+    local hitboxX
+   
 
-    self.punchHitbox = world:newRectangleCollider(self.x + 25 * self.direction, self.y - 40, 35, self.height)
+    if self.direction == 1 then
+        -- facing right start at right edge of player
+        hitboxX = self.x + self.width / 2
+    else
+        -- facing left put hitbox to left of player
+        hitboxX = self.x - self.width / 2 - punchWidth
+    end
+
+    self.punchHitbox = world:newRectangleCollider(hitboxX, self.y - 40, 35, self.height) 
     self.punchHitbox:setType("static")
     self.punchHitbox:setSensor(true)
+    self.alreadyHit = false
  
 end
 
@@ -93,12 +106,28 @@ function Player:update(dt, world, opponent)
 
     if self.punchHitbox then
         self.punchDuration = self.punchDuration - dt
+        local hitboxX = self.punchHitbox:getX()
+        local hitboxY = self.punchHitbox:getY()
 
-        if self.punchDuration <= 0 then
-            self.punchHitbox:destroy()
-            self.punchHitbox = nil
-            self.punchDuration = 0.4
+        local colliders = world:queryRectangleArea( -- find any colliders of class "Player" in this rectangle hitbox.
+            hitboxX - 35 / 2,
+            hitboxY - self.height / 2,
+            35,
+            self.height,
+            {"Player"} 
+        )
+
+        for _, collider in ipairs(colliders) do --for loops and finds if the collider is the opponent's he gets punched
+            if collider == opponent.collider and not self.alreadyHit then
+                opponent.collider:setLinearVelocity(1500 * self.direction, -100)
+                self.alreadyHit = true
+            end
         end
+        if self.punchDuration <= 0 then
+                self.punchHitbox:destroy()
+                self.punchHitbox = nil
+                self.punchDuration = 0.4
+            end
     end
 end
 
@@ -107,10 +136,9 @@ function Player:draw()
     local imgW = self.image:getWidth()
     local imgH = self.image:getHeight()
 
-    love.graphics.draw(self.image, self.x, self.y, 0, 2, 2,  imgW / 2,
+    love.graphics.draw(self.image, self.x, self.y, 0, 2 * self.direction, 2,  imgW / 2,
         imgH / 2)
-
-
+    
 end
 
 return Player
