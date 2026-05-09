@@ -61,11 +61,11 @@ end
 function movePlayer(p, leftKey, rightKey, upKey, downKey) 
     local px, py = p.collider:getLinearVelocity()
     
-    if love.keyboard.isDown(leftKey) and px > -200 then
+    if love.keyboard.isDown(leftKey) and px > -200 and not love.keyboard.isDown(rightKey) then
         p.collider:applyForce(-5000, 0)
         p.direction = -1
 
-    elseif love.keyboard.isDown(rightKey) and px < 200 then
+    elseif love.keyboard.isDown(rightKey) and px < 200 and not love.keyboard.isDown(leftKey) then
         p.collider:applyForce(5000, 0)
         p.direction = 1
     else 
