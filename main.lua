@@ -38,26 +38,16 @@ function love.load()
     if gameMap.layers["Collisions"] then
         for i, obj in pairs(gameMap.layers["Collisions"].objects) do
             
-            local platform = {
-            x = obj.x,
-            y = obj.y,
-            width = obj.width,
-            height = obj.height,
-            image = love.graphics.newImage("sprites/Platform1.png")
-            }
-            
-            platform.collider = world:newRectangleCollider(
+    
+            local collider = world:newRectangleCollider(
                 obj.x,
                 obj.y - obj.height,
                 obj.width,
                 obj.height
             )
-            platform.collider:setType("static")
-            platform.collider:setCollisionClass("Ground")
-         
-
             collider:setType("static")
             collider:setCollisionClass("Ground")
+         
 
             table.insert(platforms, obj)
         end
@@ -74,8 +64,8 @@ end
 function love.update(dt)
     
     
-    cam:move(0, -100 * dt)
-    world:update(dt)
+    cam:move(0, -10 * dt)
+    
 
     player_one:update(dt, world, player_two)
     player_two:update(dt, world, player_one)
