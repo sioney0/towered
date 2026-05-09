@@ -265,7 +265,7 @@ function Player:updatePunch(dt, world, opponent)
             if collider == opponent.collider and not self.alreadyHit then
                 punchHitSFX:stop()
                 punchHitSFX:play()
-
+                
                 opponent.knockbackTimer = 0.2
                 opponent.collider:setLinearVelocity(500 * self.direction, -100)
                 self.alreadyHit = true

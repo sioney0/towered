@@ -86,6 +86,8 @@ end
 function love.keypressed(key)
     if gameState == "menu" then
         gameState = "fighting"
+        bgm:stop()
+        bgm:play()
     end
 end
 
