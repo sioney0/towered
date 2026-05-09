@@ -288,9 +288,11 @@ function Player:updatePunch(dt, world, opponent)
 end
 
 function Player:checkDeath(cam, gameState)
-    local voidY = cam.y + love.graphics.getHeight() / 2 + 100
+    local voidY = cam.y + love.graphics.getHeight() / 2
 
-    if self.y > voidY then self.hp = self.hp - 1
+    if self.y > voidY then 
+        
+        self.hp = self.hp - 1
 
         if self.hp > 0 then
             self.collider:setPosition(self.spawnX, self.spawnY)
