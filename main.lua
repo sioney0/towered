@@ -17,7 +17,7 @@ function love.load()
     gameMap = sti("maps/map14.lua")
     fog = {}
     
-    fog.spriteSheet = love.graphics.newImage('/sprites/fog.png')
+    fog.spriteSheet = love.graphics.newImage('/sprites/fog2.png')
     fog.grid = anim8.newGrid(
         320,
         32,
@@ -25,7 +25,7 @@ function love.load()
         fog.spriteSheet:getHeight()
     )
     fog.animation = {}
-    fog.animation.move = anim8.newAnimation(fog.grid(1, '1-2'),1)
+    fog.animation.move = anim8.newAnimation(fog.grid(1, '2-4'),0.3)
 
     fog.x = 0
     fog.y = 620
