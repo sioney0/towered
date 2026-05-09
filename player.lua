@@ -14,10 +14,12 @@ function Player:new(world, x_pos, y_pos, health, type)
         direction = 1,
         canJump = true,
         player_number = type,
+        width = 50,
+        height = 80,
         
 
         isPunching = false,
-        punchDuration = 0.15,
+        punchDuration = 0.4,
         punchCooldown = 0,
         punchCooldownTime = 0.4,
         punchHitbox = nil
@@ -32,19 +34,15 @@ function Player:new(world, x_pos, y_pos, health, type)
 end
 
 function Player:punch(world)
-    if self.punchCooldown > 0 then
+    if self.punchCooldown > 0 or self.punchHitbox then
         return
     end
 
-
-
-    self.punchHitbox = world:newRectangleCollider(self.x + 10 * self.direction, self.y, 20, 20)
+    self.punchHitbox = world:newRectangleCollider(self.x + 25 * self.direction, self.y - 40, 35, self.height)
     self.punchHitbox:setType("static")
     self.punchHitbox:setSensor(true)
-
-    
+ 
 end
-
 
 function movePlayer(p, leftKey, rightKey, upKey, downKey) 
     local px, py = p.collider:getLinearVelocity()
@@ -74,7 +72,7 @@ function Player:update(dt, world, opponent)
         movePlayer(self, "a", "d", "w", "s")
     end
 
-        if self.collider:enter("Ground") then
+    if self.collider:enter("Ground") then
         self.canJump = true
     end
 
@@ -90,6 +88,16 @@ function Player:update(dt, world, opponent)
     elseif self.player_number == 2 then
         if love.keyboard.isDown('f') then
             self:punch(world)
+        end
+    end
+
+    if self.punchHitbox then
+        self.punchDuration = self.punchDuration - dt
+
+        if self.punchDuration <= 0 then
+            self.punchHitbox:destroy()
+            self.punchHitbox = nil
+            self.punchDuration = 0.4
         end
     end
 end
