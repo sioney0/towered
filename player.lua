@@ -30,7 +30,7 @@ function Player:new(world, x_pos, y_pos, health, type)
         knockbackTimer = 0,
         jumpcooldown = 0
     }
-   
+    
     entity.collider = world:newRectangleCollider(x_pos, y_pos, 32, 72)
     entity.collider:setFixedRotation(true)
     entity.collider:setCollisionClass("Player")
@@ -293,13 +293,14 @@ end
 
 function Player:checkDeath(cam, gameState)
     local voidY = cam.y + love.graphics.getHeight() / 2
+    local topOfScreen = cam.y - love.graphics.getHeight() / 2
 
     if self.y > voidY then 
         
         self.hp = self.hp - 1
 
         if self.hp > 0 then
-            self.collider:setPosition(self.spawnX, self.spawnY)
+            self.collider:setPosition(self.spawnX, topOfScreen + 50)
             self.collider:setLinearVelocity(0, 0)
         end
     end
