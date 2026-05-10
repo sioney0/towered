@@ -95,8 +95,8 @@ function love.update(dt)
   
 
     if gameState == "fighting" then 
-    
-        cam:move(0, -100 * dt)
+
+        cam:move(0, -40 * dt)
         
 
         player_one:update(dt, world, player_two, cam)
