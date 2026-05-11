@@ -16,6 +16,7 @@ function love.load()
 
     love.window.setMode(1280, 720)
     bigFont = love.graphics.newFont(48)
+    smallFont = love.graphics.newFont(12)
     wf = require "libraries/windfield" 
     sti = require "libraries/sti"
     camera = require "libraries/camera"
@@ -82,12 +83,42 @@ function love.load()
 
 end
 
-      
+    
+function restartGame()
+    player_one.hp = 3
+    player_two.hp = 3
+
+    -- reset positions
+    player_one.collider:setPosition(player_one.spawnX, player_one.spawnY)
+    player_two.collider:setPosition(player_two.spawnX, player_two.spawnY)
+
+    -- reset velocities
+    player_one.collider:setLinearVelocity(0, 0)
+    player_two.collider:setLinearVelocity(0, 0)
+
+    -- reset camera
+    cam:lookAt(640, mapHeight - 360)
+
+    -- stop music
+    bgm:stop()
+
+    -- go back to menu
+    gameState = "menu"
+
+end
+
+
 function love.keypressed(key)
     if gameState == "menu" then
         gameState = "fighting"
         bgm:stop()
         bgm:play()
+    end
+
+    if gameState == "player1_win" or gameState == "player2_win" then
+        if key == "r" then
+            restartGame()
+        end
     end
 end
 
@@ -120,8 +151,11 @@ function love.draw()
     
     if gameState == "menu" then
         gameMap:draw()
+        love.graphics.setFont(smallFont)
+         love.graphics.printf("Player 1: arrowkey movement, P to punch", 0, 220, 300, "center")
+        love.graphics.printf("Player 2: wasd movement, F to punch", 0, 200, 300, "center")
         love.graphics.setFont(bigFont)
-        love.graphics.printf("Player 1: arrowkey movement, P to punch", 0, 200, 1280, "center")
+        
         
         love.graphics.printf("TOWERED", 0, 300, 1280, "center")
         love.graphics.printf("PRESS ANY KEY TO START", 0, 600, 1280, "center")
