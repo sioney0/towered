@@ -292,7 +292,7 @@ function Player:updatePunch(dt, world, opponent)
 end
 
 function Player:checkDeath(cam, gameState)
-    local voidY = cam.y + love.graphics.getHeight() / 2
+    local voidY = cam.y + love.graphics.getHeight() / 2 - 50
     local topOfScreen = cam.y - love.graphics.getHeight() / 2
 
     if self.y > voidY then 
